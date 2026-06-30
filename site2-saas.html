@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forma — Focus Without the Noise</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: rgba(255,255,255,.08);
+    --text: #e8e8f0;
+    --muted: rgba(232,232,240,.45);
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --green: #4ade80;
+    --sans: 'DM Sans', system-ui, sans-serif;
+    --serif: 'DM Serif Display', Georgia, serif;
+  }
+
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 64px;
+    border-bottom: 1px solid transparent;
+    transition: border-color .3s, background .3s;
+  }
+  nav.scrolled {
+    background: rgba(10,10,15,.85);
+    backdrop-filter: blur(12px);
+    border-color: var(--border);
+  }
+  .nav-logo {
+    font-family: var(--sans); font-weight: 500; font-size: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--muted); font-size: 14px; transition: color .2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-right { display: flex; gap: 12px; align-items: center; }
+  .btn-nav-ghost {
+    background: none; border: 1px solid var(--border);
+    color: var(--text); font-family: var(--sans); font-size: 13px;
+    padding: 9px 20px; cursor: pointer; border-radius: 6px;
+    transition: border-color .2s;
+  }
+  .btn-nav-ghost:hover { border-color: rgba(255,255,255,.3); }
+  .btn-nav-primary {
+    background: var(--accent); border: none;
+    color: #fff; font-family: var(--sans); font-size: 13px; font-weight: 500;
+    padding: 9px 20px; cursor: pointer; border-radius: 6px;
+    transition: opacity .2s;
+  }
+  .btn-nav-primary:hover { opacity: .85; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Background grid */
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(108,99,255,.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(108,99,255,.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  /* Glow orb */
+  .hero::after {
+    content: '';
+    position: absolute; top: 10%; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(108,99,255,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(108,99,255,.3);
+    border-radius: 999px; padding: 6px 16px;
+    font-size: 12px; color: var(--accent2); margin-bottom: 32px;
+    position: relative; z-index: 1;
+    background: rgba(108,99,255,.08);
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(44px, 7vw, 88px);
+    line-height: 1.06; margin-bottom: 24px;
+    position: relative; z-index: 1;
+  }
+  .hero-title .accent { color: var(--accent2); font-style: italic; }
+  .hero-sub {
+    font-size: clamp(15px, 2vw, 18px); color: var(--muted);
+    max-width: 520px; line-height: 1.75; margin-bottom: 48px;
+    position: relative; z-index: 1;
+  }
+  .hero-actions {
+    display: flex; gap: 12px; align-items: center;
+    position: relative; z-index: 1; flex-wrap: wrap; justify-content: center;
+  }
+  .btn-hero {
+    background: var(--accent); border: none;
+    color: #fff; font-family: var(--sans); font-size: 15px; font-weight: 500;
+    padding: 14px 32px; border-radius: 8px; cursor: pointer;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-hero:hover { opacity: .88; transform: translateY(-1px); }
+  .btn-hero-ghost {
+    background: none; border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--sans); font-size: 15px;
+    padding: 14px 32px; border-radius: 8px; cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-hero-ghost:hover { border-color: rgba(255,255,255,.25); color: var(--text); }
+  .hero-social { font-size: 13px; color: var(--muted); margin-top: 20px; position: relative; z-index: 1; }
+  .hero-social span { color: var(--text); }
+
+  /* APP PREVIEW */
+  .app-preview {
+    max-width: 900px; margin: 0 auto;
+    padding: 0 24px 100px;
+    position: relative; z-index: 1;
+  }
+  .app-window {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  }
+  .window-bar {
+    background: var(--surface2); padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .w-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .w-dot:nth-child(1) { background: #ff5f57; }
+  .w-dot:nth-child(2) { background: #febc2e; }
+  .w-dot:nth-child(3) { background: #28c840; }
+  .window-title { font-size: 12px; color: var(--muted); margin: 0 auto; }
+  .window-body { padding: 32px; }
+  .app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .app-date { font-size: 22px; font-weight: 500; }
+  .app-score { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+  .score-val { color: var(--green); font-weight: 500; font-size: 15px; }
+  /* Task list */
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+  .task-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    transition: border-color .2s;
+    cursor: pointer;
+  }
+  .task-item:hover { border-color: rgba(108,99,255,.3); }
+  .task-check {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .task-item.done .task-check {
+    background: var(--accent); border-color: var(--accent);
+  }
+  .task-item.done .task-check::after {
+    content: ''; width: 5px; height: 9px;
+    border-right: 2px solid white; border-bottom: 2px solid white;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+  .task-text { flex: 1; font-size: 14px; }
+  .task-item.done .task-text { opacity: .4; text-decoration: line-through; }
+  .task-tag {
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    font-weight: 500;
+  }
+  .tag-purple { background: rgba(108,99,255,.18); color: var(--accent2); }
+  .tag-green { background: rgba(74,222,128,.12); color: var(--green); }
+  .tag-muted { background: rgba(255,255,255,.06); color: var(--muted); }
+  /* Progress bar */
+  .progress-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; color: var(--muted); }
+  .progress-bar { height: 4px; background: rgba(255,255,255,.07); border-radius: 999px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 999px; width: 0; transition: width 1.4s cubic-bezier(.4,0,.2,1); }
+
+  /* FEATURES */
+  .features { padding: 100px 64px; }
+  .section-eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent2); margin-bottom: 16px; }
+  .section-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); line-height: 1.15; max-width: 500px; margin-bottom: 72px; }
+  .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .feature-card {
+    padding: 40px 32px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    transition: border-color .25s, background .25s;
+    position: relative; overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(108,99,255,.06) 0%, transparent 60%);
+    opacity: 0; transition: opacity .25s;
+  }
+  .feature-card:hover { border-color: rgba(108,99,255,.3); }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(108,99,255,.15); border: 1px solid rgba(108,99,255,.25);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 24px; position: relative; z-index: 1;
+  }
+  .feature-name { font-size: 18px; font-weight: 500; margin-bottom: 12px; position: relative; z-index: 1; }
+  .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.75; position: relative; z-index: 1; }
+
+  /* SOCIAL PROOF */
+  .social-proof { padding: 80px 64px; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .proof-label { text-align: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 48px; }
+  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .testimonial {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 28px;
+  }
+  .testimonial-text { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 20px; }
+  .testimonial-author { display: flex; align-items: center; gap: 10px; }
+  .author-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 500; color: white;
+  }
+  .av-purple { background: linear-gradient(135deg, #6c63ff, #a78bfa); }
+  .av-teal { background: linear-gradient(135deg, #0d9488, #34d399); }
+  .av-coral { background: linear-gradient(135deg, #ef4444, #f97316); }
+  .author-name { font-size: 14px; font-weight: 500; }
+  .author-role { font-size: 12px; color: var(--muted); }
+  .stars { color: #fbbf24; font-size: 13px; margin-bottom: 12px; letter-spacing: 2px; }
+
+  /* PRICING */
+  .pricing { padding: 100px 64px; text-align: center; }
+  .pricing-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); margin-bottom: 12px; }
+  .pricing-sub { font-size: 16px; color: var(--muted); margin-bottom: 60px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 900px; margin: 0 auto; text-align: left; }
+  .pricing-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 36px;
+    position: relative; transition: border-color .25s;
+  }
+  .pricing-card.popular {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(108,99,255,.08) 0%, var(--surface) 100%);
+  }
+  .popular-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: white; font-size: 11px; font-weight: 500;
+    padding: 4px 14px; border-radius: 999px; white-space: nowrap;
+  }
+  .plan-name { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px; }
+  .plan-price { font-family: var(--serif); font-size: 48px; margin-bottom: 4px; }
+  .plan-period { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
+  .plan-features { list-style: none; margin-bottom: 32px; }
+  .plan-features li {
+    font-size: 14px; color: var(--muted); padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .plan-features li::before { content: '✓'; color: var(--green); font-weight: 500; flex-shrink: 0; }
+  .plan-features li.muted::before { content: '–'; color: var(--muted); }
+  .plan-features li.muted { opacity: .45; }
+  .btn-plan {
+    width: 100%; padding: 13px; border-radius: 8px; cursor: pointer;
+    font-family: var(--sans); font-size: 14px; font-weight: 500;
+    transition: opacity .2s; border: 1px solid var(--border);
+    background: none; color: var(--text);
+  }
+  .btn-plan.cta { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn-plan:hover { opacity: .8; }
+
+  /* CTA BANNER */
+  .cta-banner {
+    margin: 0 64px 100px;
+    background: linear-gradient(135deg, rgba(108,99,255,.15) 0%, rgba(167,139,250,.1) 100%);
+    border: 1px solid rgba(108,99,255,.25);
+    border-radius: 16px; padding: 72px 64px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta-banner::before {
+    content: '';
+    position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 200px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(108,99,255,.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .cta-title { font-family: var(--serif); font-size: clamp(28px, 4vw, 44px); margin-bottom: 16px; position: relative; z-index: 1; }
+  .cta-sub { font-size: 16px; color: var(--muted); margin-bottom: 36px; position: relative; z-index: 1; }
+
+  /* FOOTER */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 60px 64px 28px;
+  }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px; gap: 40px; }
+  .footer-brand { font-weight: 500; font-size: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .footer-tagline { font-size: 13px; color: var(--muted); max-width: 220px; line-height: 1.6; }
+  .footer-cols { display: flex; gap: 56px; }
+  .footer-col h4 { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { text-decoration: none; font-size: 14px; color: rgba(232,232,240,.4); transition: color .2s; }
+  .footer-col a:hover { color: var(--text); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; display: flex; justify-content: space-between; }
+  .footer-copy { font-size: 12px; color: rgba(232,232,240,.2); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .features, .social-proof, .pricing { padding: 60px 24px; }
+    .features-grid, .testimonials, .pricing-grid { grid-template-columns: 1fr; }
+    .cta-banner { margin: 0 24px 60px; padding: 48px 28px; }
+    footer { padding: 40px 24px 24px; }
+    .footer-top { flex-direction: column; }
+    .footer-cols { flex-wrap: wrap; gap: 32px; }
+    .app-preview { padding: 0 16px 60px; }
+    .window-body { padding: 20px 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .badge-dot { animation: none; }
+    .progress-fill { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">
+    <div class="logo-dot"></div>
+    Forma
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#">Blog</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-nav-ghost">Log in</button>
+    <button class="btn-nav-primary">Get started</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    Now in public beta — free to start
+  </div>
+  <h1 class="hero-title">Focus without<br>the <span class="accent">noise.</span></h1>
+  <p class="hero-sub">Forma turns scattered tasks, notes, and goals into a single daily view. No endless boards. No feature bloat. Just what matters today.</p>
+  <div class="hero-actions">
+    <button class="btn-hero">Start for free</button>
+    <button class="btn-hero-ghost">Watch demo →</button>
+  </div>
+  <p class="hero-social">Trusted by <span>4,200+</span> solo builders and small teams</p>
+</div>
+
+<!-- APP PREVIEW -->
+<div class="app-preview">
+  <div class="app-window">
+    <div class="window-bar">
+      <div class="w-dot"></div>
+      <div class="w-dot"></div>
+      <div class="w-dot"></div>
+      <div class="window-title">Forma — Thursday, November 14</div>
+    </div>
+    <div class="window-body">
+      <div class="app-header">
+        <div class="app-date">Today's focus</div>
+        <div class="app-score">Daily score <span class="score-val">74%</span></div>
+      </div>
+      <div class="task-list">
+        <div class="task-item done">
+          <div class="task-check"></div>
+          <span class="task-text">Review and merge PR #48 — auth refactor</span>
+          <span class="task-tag tag-muted">Dev</span>
+        </div>
+        <div class="task-item done">
+          <div class="task-check"></div>
+          <span class="task-text">Send Q4 proposal to client</span>
+          <span class="task-tag tag-green">Done</span>
+        </div>
+        <div class="task-item">
+          <div class="task-check"></div>
+          <span class="task-text">Finish landing page copy draft</span>
+          <span class="task-tag tag-purple">Writing</span>
+        </div>
+        <div class="task-item">
+          <div class="task-check"></div>
+          <span class="task-text">Weekly team sync — 3pm</span>
+          <span class="task-tag tag-muted">Meeting</span>
+        </div>
+        <div class="task-item">
+          <div class="task-check"></div>
+          <span class="task-text">Update onboarding flow based on feedback</span>
+          <span class="task-tag tag-purple">Product</span>
+        </div>
+      </div>
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>Progress</span>
+          <span>2 of 5 tasks</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <p class="section-eyebrow">What you get</p>
+  <h2 class="section-title">Built for people who actually work</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="3" width="16" height="3" rx="1.5" fill="#a78bfa"/>
+          <rect x="2" y="9" width="12" height="3" rx="1.5" fill="#6c63ff" opacity=".6"/>
+          <rect x="2" y="15" width="8" height="3" rx="1.5" fill="#6c63ff" opacity=".3"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Daily focus view</h3>
+      <p class="feature-desc">Each morning, Forma surfaces your three most important tasks. Everything else waits. You start with clarity, not a wall of items.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="7" stroke="#a78bfa" stroke-width="1.5" fill="none"/>
+          <path d="M10 6v4l3 2" stroke="#6c63ff" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Time blocking</h3>
+      <p class="feature-desc">Drag tasks onto your day. Forma shows you where your time actually went, and where tomorrow's plan is already unrealistic.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10h12M10 4l6 6-6 6" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Auto-carry forward</h3>
+      <p class="feature-desc">Unfinished tasks don't disappear. They reappear tomorrow with a small flag. No guilt trip — just a quiet reminder.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="6" height="6" rx="1.5" fill="#a78bfa" opacity=".7"/>
+          <rect x="11" y="3" width="6" height="6" rx="1.5" fill="#6c63ff" opacity=".5"/>
+          <rect x="3" y="11" width="6" height="6" rx="1.5" fill="#6c63ff" opacity=".5"/>
+          <rect x="11" y="11" width="6" height="6" rx="1.5" fill="#a78bfa" opacity=".3"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Weekly review</h3>
+      <p class="feature-desc">Every Sunday, a one-page summary of what you shipped, what slipped, and what that means for next week. No spreadsheet needed.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 4h10a1 1 0 0 1 1 1v1H4V5a1 1 0 0 1 1-1z" fill="#a78bfa" opacity=".6"/>
+          <rect x="4" y="6" width="12" height="10" rx="1" stroke="#6c63ff" stroke-width="1.5" fill="none"/>
+          <path d="M8 10h4M8 13h2" stroke="#a78bfa" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Linked notes</h3>
+      <p class="feature-desc">Add context to any task. Notes live next to the work they describe, not in a separate app you'll forget to check.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="7" cy="8" r="3" stroke="#a78bfa" stroke-width="1.5" fill="none"/>
+          <circle cx="14" cy="8" r="3" stroke="#6c63ff" stroke-width="1.5" fill="none" opacity=".6"/>
+          <path d="M1 16c0-2.2 2.7-4 6-4s6 1.8 6 4" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <h3 class="feature-name">Shared workspace</h3>
+      <p class="feature-desc">Invite up to 5 teammates. See who's working on what today, without a standup meeting about your standup meeting.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<div class="social-proof" id="testimonials">
+  <p class="proof-label">What people are saying</p>
+  <div class="testimonials">
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"I've tried every productivity app. Forma is the first one that doesn't make me feel like I need a productivity system to manage my productivity system."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar av-purple">SR</div>
+        <div>
+          <div class="author-name">Sara R.</div>
+          <div class="author-role">Freelance designer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"The daily focus view changed how I start my mornings. I open Forma, see three things, and get to work. That's it. No more 45-minute 'planning' sessions."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar av-teal">MK</div>
+        <div>
+          <div class="author-name">Marcus K.</div>
+          <div class="author-role">Indie developer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">"We're a team of four using Forma. No Slack noise about tasks, no status update meetings. We just look at each other's focus view and know what's happening."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar av-coral">AL</div>
+        <div>
+          <div class="author-name">Anna L.</div>
+          <div class="author-role">Co-founder, Leafside</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <h2 class="pricing-title">Simple pricing</h2>
+  <p class="pricing-sub">No tiers named after Greek gods. No feature you need locked behind "Enterprise."</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-period">forever</div>
+      <ul class="plan-features">
+        <li>Daily focus view</li>
+        <li>Up to 20 tasks</li>
+        <li>7-day history</li>
+        <li class="muted">Time blocking</li>
+        <li class="muted">Weekly review</li>
+        <li class="muted">Team workspace</li>
+      </ul>
+      <button class="btn-plan">Get started</button>
+    </div>
+    <div class="pricing-card popular">
+      <div class="popular-badge">Most popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$8</div>
+      <div class="plan-period">per month, billed yearly</div>
+      <ul class="plan-features">
+        <li>Everything in Free</li>
+        <li>Unlimited tasks</li>
+        <li>Full history</li>
+        <li>Time blocking</li>
+        <li>Weekly review</li>
+        <li class="muted">Team workspace</li>
+      </ul>
+      <button class="btn-plan cta">Start free trial</button>
+    </div>
+    <div class="pricing-card">
+      <div class="plan-name">Team</div>
+      <div class="plan-price">$18</div>
+      <div class="plan-period">per seat / month</div>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>Shared workspace</li>
+        <li>Team analytics</li>
+        <li>Priority support</li>
+        <li>SSO / SAML</li>
+        <li>Custom integrations</li>
+      </ul>
+      <button class="btn-plan">Contact sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner">
+  <h2 class="cta-title">Ready to actually finish your to-do list?</h2>
+  <p class="cta-sub">Start for free. No credit card. Cancel any time (but you won't want to).</p>
+  <button class="btn-hero" style="font-size:15px;padding:15px 36px">Get started — it's free</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand"><div class="logo-dot"></div>Forma</div>
+      <div class="footer-tagline">Focus without the noise. Built for solo builders and small teams.</div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">Changelog</a></li>
+          <li><a href="#">Roadmap</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help center</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2024 Forma. All rights reserved.</span>
+    <span class="footer-copy">Made for focused people.</span>
+  </div>
+</footer>
+
+<script>
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Animate progress bar on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      const bar = document.getElementById('progress-fill');
+      if (bar) bar.style.width = '40%';
+    }, 600);
+  });
+
+  // Animate progress bar when in viewport
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          const bar = document.getElementById('progress-fill');
+          if (bar) bar.style.width = '40%';
+        }, 300);
+      }
+    });
+  }, { threshold: 0.3 });
+  const preview = document.querySelector('.app-preview');
+  if (preview) observer.observe(preview);
+</script>
+</body>
+</html>

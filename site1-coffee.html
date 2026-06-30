@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dusk Coffee — Slow Coffee, Fast World</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1208;
+    --cream: #f5f0e8;
+    --tan: #c8a97e;
+    --rust: #8b4a1e;
+    --warm: #e8dcc8;
+    --muted: #7a6a56;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: transparent;
+    mix-blend-mode: normal;
+    transition: background .3s;
+  }
+  nav.scrolled { background: rgba(245,240,232,.92); backdrop-filter: blur(8px); }
+  .nav-logo { font-family: var(--serif); font-size: 22px; letter-spacing: .02em; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--ink); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; transition: opacity .2s; }
+  .nav-links a:hover { opacity: 1; }
+  .nav-cta {
+    font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+    padding: 10px 24px; border: 1px solid var(--ink);
+    background: none; color: var(--ink); cursor: pointer;
+    transition: background .2s, color .2s;
+    font-family: var(--sans);
+  }
+  .nav-cta:hover { background: var(--ink); color: var(--cream); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    padding-top: 80px;
+  }
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 48px 80px 72px;
+  }
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--rust); margin-bottom: 24px;
+  }
+  .hero-title {
+    font-family: var(--serif); font-size: clamp(52px, 6vw, 84px);
+    line-height: 1.05; margin-bottom: 32px;
+  }
+  .hero-title em { font-style: italic; color: var(--rust); }
+  .hero-body {
+    font-size: 16px; line-height: 1.75; color: var(--muted);
+    max-width: 420px; margin-bottom: 48px;
+  }
+  .hero-actions { display: flex; gap: 16px; align-items: center; }
+  .btn-primary {
+    background: var(--rust); color: var(--cream);
+    border: none; padding: 16px 36px;
+    font-family: var(--sans); font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-primary:hover { background: var(--ink); }
+  .btn-ghost {
+    font-size: 13px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--tan);
+    padding-bottom: 2px; transition: color .2s;
+  }
+  .btn-ghost:hover { color: var(--ink); }
+  .hero-right {
+    background: var(--ink);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero-visual {
+    position: relative; display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+  }
+  /* SVG coffee illustration */
+  .cup-wrap {
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .steam-line {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: steam 2.5s ease-in-out infinite;
+  }
+  .steam-line:nth-child(2) { animation-delay: .4s; }
+  .steam-line:nth-child(3) { animation-delay: .8s; }
+  @keyframes steam {
+    0% { stroke-dashoffset: 40; opacity: 0; }
+    30% { opacity: .7; }
+    100% { stroke-dashoffset: -40; opacity: 0; }
+  }
+  .hero-badge {
+    position: absolute; bottom: 48px; right: 48px;
+    width: 100px; height: 100px;
+    border: 1px solid rgba(200,169,126,.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: spin 20s linear infinite;
+  }
+  .hero-badge svg { position: absolute; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* STATS BAR */
+  .stats {
+    background: var(--ink); color: var(--cream);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .stat-item {
+    padding: 40px 32px;
+    border-right: 1px solid rgba(255,255,255,.08);
+    text-align: center;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-number {
+    font-family: var(--serif); font-size: 42px; color: var(--tan);
+    display: block; margin-bottom: 6px;
+  }
+  .stat-label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; opacity: .5; }
+
+  /* SECTION GENERIC */
+  section { padding: 100px 72px; }
+
+  /* ABOUT */
+  .about { background: var(--cream); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .about-label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--rust); margin-bottom: 16px; }
+  .about-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); line-height: 1.15; margin-bottom: 24px; }
+  .about-body { font-size: 16px; line-height: 1.8; color: var(--muted); }
+  .about-visual {
+    background: var(--warm); aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .about-circles {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* MENU */
+  .menu { background: var(--ink); color: var(--cream); }
+  .menu-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+  .menu-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); }
+  .menu-sub { font-size: 13px; color: rgba(245,240,232,.4); letter-spacing: .06em; }
+  .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .menu-card {
+    background: rgba(255,255,255,.04);
+    padding: 40px 32px;
+    border: 1px solid rgba(200,169,126,.1);
+    transition: background .25s, border-color .25s;
+    cursor: pointer;
+  }
+  .menu-card:hover { background: rgba(139,74,30,.15); border-color: rgba(200,169,126,.3); }
+  .menu-card-name { font-family: var(--serif); font-size: 24px; margin-bottom: 12px; }
+  .menu-card-desc { font-size: 14px; line-height: 1.7; color: rgba(245,240,232,.5); margin-bottom: 28px; }
+  .menu-card-price { font-size: 22px; color: var(--tan); font-family: var(--serif); }
+
+  /* PROCESS */
+  .process { background: var(--warm); }
+  .process-header { text-align: center; margin-bottom: 72px; }
+  .process-title { font-family: var(--serif); font-size: clamp(32px, 4vw, 52px); margin-bottom: 16px; }
+  .process-sub { font-size: 15px; color: var(--muted); }
+  .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative; }
+  .process-steps::before {
+    content: ''; position: absolute; top: 28px; left: 10%; right: 10%; height: 1px;
+    background: var(--tan); opacity: .4;
+  }
+  .process-step { text-align: center; padding: 0 24px; }
+  .step-num {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 1px solid var(--tan); display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-size: 20px; color: var(--rust);
+    margin: 0 auto 24px; background: var(--warm); position: relative; z-index: 1;
+  }
+  .step-title { font-family: var(--serif); font-size: 20px; margin-bottom: 12px; }
+  .step-body { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+  /* QUOTE */
+  .quote-section {
+    background: var(--rust); color: var(--cream);
+    text-align: center; padding: 80px 72px;
+  }
+  .quote-text {
+    font-family: var(--serif); font-style: italic;
+    font-size: clamp(24px, 3.5vw, 42px); line-height: 1.3;
+    max-width: 800px; margin: 0 auto 24px;
+  }
+  .quote-author { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: .65; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: var(--cream);
+    padding: 60px 72px 32px;
+  }
+  .footer-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 60px; }
+  .footer-brand { font-family: var(--serif); font-size: 28px; margin-bottom: 12px; }
+  .footer-tagline { font-size: 13px; color: rgba(245,240,232,.4); }
+  .footer-cols { display: flex; gap: 64px; }
+  .footer-col h4 { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--tan); margin-bottom: 20px; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 10px; }
+  .footer-col a { text-decoration: none; color: rgba(245,240,232,.5); font-size: 14px; transition: color .2s; }
+  .footer-col a:hover { color: var(--cream); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.08); padding-top: 24px; display: flex; justify-content: space-between; }
+  .footer-copy { font-size: 12px; opacity: .3; }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links, .nav-cta { display: none; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { padding: 100px 24px 48px; }
+    .hero-right { min-height: 360px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .about, section { padding: 60px 24px; }
+    .about { grid-template-columns: 1fr; }
+    .menu-grid { grid-template-columns: 1fr; }
+    .process-steps { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+    .process-steps::before { display: none; }
+    footer { padding: 40px 24px 24px; }
+    .footer-top { flex-direction: column; gap: 40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cup-wrap, .steam-line, .hero-badge { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">Dusk Coffee</div>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#process">Our Process</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <button class="nav-cta">Order Now</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Single Origin · Small Batch · Est. 2019</p>
+    <h1 class="hero-title">Slow Coffee<br>for a <em>Fast</em><br>World</h1>
+    <p class="hero-body">We source, roast, and brew with obsessive attention. Every cup is a deliberate pause — not just caffeine, but a small ritual worth having.</p>
+    <div class="hero-actions">
+      <button class="btn-primary">Explore Menu</button>
+      <a href="#process" class="btn-ghost">How we roast →</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-visual">
+      <div class="cup-wrap">
+        <svg width="240" height="280" viewBox="0 0 240 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Steam -->
+          <path class="steam-line" d="M90 70 C90 55, 100 50, 100 35" stroke="#c8a97e" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path class="steam-line" d="M120 60 C120 45, 130 40, 130 25" stroke="#c8a97e" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <path class="steam-line" d="M150 68 C150 53, 160 48, 160 33" stroke="#c8a97e" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <!-- Saucer -->
+          <ellipse cx="120" cy="230" rx="90" ry="14" fill="#2a1f0f" stroke="#c8a97e" stroke-width="1"/>
+          <ellipse cx="120" cy="226" rx="90" ry="14" fill="#1a1208" stroke="#3a2d1a" stroke-width="1"/>
+          <!-- Cup body -->
+          <path d="M60 100 L75 225 L165 225 L180 100 Z" fill="#1a1208" stroke="#3a2d1a" stroke-width="1"/>
+          <!-- Cup rim -->
+          <ellipse cx="120" cy="100" rx="60" ry="10" fill="#2a1f0f" stroke="#c8a97e" stroke-width="1"/>
+          <!-- Coffee surface -->
+          <ellipse cx="120" cy="100" rx="52" ry="8" fill="#3d2510"/>
+          <!-- Latte art -->
+          <ellipse cx="120" cy="100" rx="30" ry="5" fill="#6b4226" opacity=".6"/>
+          <path d="M95 100 Q120 92, 145 100" stroke="#c8a97e" stroke-width="1" fill="none" opacity=".4"/>
+          <!-- Handle -->
+          <path d="M180 130 Q215 130, 215 160 Q215 190, 180 190" stroke="#3a2d1a" stroke-width="10" fill="none" stroke-linecap="round"/>
+          <path d="M180 130 Q208 130, 208 160 Q208 190, 180 190" stroke="#2a1f0f" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="hero-badge">
+        <svg viewBox="0 0 100 100" width="100" height="100">
+          <path id="circle-text" d="M 50,50 m -37,0 a 37,37 0 1,1 74,0 a 37,37 0 1,1 -74,0" fill="none"/>
+          <text font-size="9.5" fill="#c8a97e" font-family="Inter, sans-serif" letter-spacing="3.2">
+            <textPath href="#circle-text">SPECIALTY · ROASTED DAILY · ETHICALLY SOURCED ·</textPath>
+          </text>
+        </svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="4" fill="#c8a97e"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><span class="stat-number">14</span><span class="stat-label">Origins</span></div>
+  <div class="stat-item"><span class="stat-number">6</span><span class="stat-label">Roast profiles</span></div>
+  <div class="stat-item"><span class="stat-number">2,400</span><span class="stat-label">Happy regulars</span></div>
+  <div class="stat-item"><span class="stat-number">5★</span><span class="stat-label">Avg. rating</span></div>
+</div>
+
+<!-- MENU -->
+<section class="menu" id="menu">
+  <div class="menu-header">
+    <h2 class="menu-title">The Menu</h2>
+    <span class="menu-sub">Seasonal offerings</span>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <div class="menu-card-name">Black Ritual</div>
+      <div class="menu-card-desc">Ethiopia Yirgacheffe, light roast. Citrus and jasmine with a clean, lingering finish. Best experienced black.</div>
+      <div class="menu-card-price">$4.50</div>
+    </div>
+    <div class="menu-card">
+      <div class="menu-card-name">Dusk Flat White</div>
+      <div class="menu-card-desc">Double ristretto, silky microfoam. A tighter ratio than a latte — more espresso, less milk, no apologies.</div>
+      <div class="menu-card-price">$5.50</div>
+    </div>
+    <div class="menu-card">
+      <div class="menu-card-name">Cold Drift</div>
+      <div class="menu-card-desc">18-hour cold brew concentrate over ice. Smooth, low-acid, slightly sweet without a single gram of sugar.</div>
+      <div class="menu-card-price">$6.00</div>
+    </div>
+    <div class="menu-card">
+      <div class="menu-card-name">Cortado</div>
+      <div class="menu-card-desc">Equal parts espresso and warm milk. The honest middle ground between strength and softness.</div>
+      <div class="menu-card-price">$4.80</div>
+    </div>
+    <div class="menu-card">
+      <div class="menu-card-name">Pour Over</div>
+      <div class="menu-card-desc">Single-origin, brewed to order. Rotating monthly. Ask your barista what's on the bar today.</div>
+      <div class="menu-card-price">$7.00</div>
+    </div>
+    <div class="menu-card">
+      <div class="menu-card-name">Ember Latte</div>
+      <div class="menu-card-desc">House espresso with toasted oat milk, a pinch of cardamom. Our most requested seasonal original.</div>
+      <div class="menu-card-price">$6.50</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="process-header">
+    <h2 class="process-title">From Seed to Cup</h2>
+    <p class="process-sub">Four steps we refuse to rush</p>
+  </div>
+  <div class="process-steps">
+    <div class="process-step">
+      <div class="step-num">I</div>
+      <h3 class="step-title">Source</h3>
+      <p class="step-body">We visit farms directly. No brokers. We pay above fair trade and return to the same growers year after year.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">II</div>
+      <h3 class="step-title">Roast</h3>
+      <p class="step-body">Small batches, daily. Each origin gets a custom profile. We never blend to hide a flaw.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">III</div>
+      <h3 class="step-title">Rest</h3>
+      <p class="step-body">Freshly roasted coffee needs 24–72 hours to degas. We wait. Impatience makes bad espresso.</p>
+    </div>
+    <div class="process-step">
+      <div class="step-num">IV</div>
+      <h3 class="step-title">Brew</h3>
+      <p class="step-body">Temperature, grind, dose, time. Four variables our baristas obsess over so you don't have to.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div>
+    <p class="about-label">Our story</p>
+    <h2 class="about-title">Started in a garage.<br>Still tastes like it.</h2>
+    <p class="about-body">Dusk Coffee began in 2019 when two friends got tired of bad office coffee and started roasting on a 1 kg drum in a rented garage. They had no business plan, just a shared conviction that coffee deserved more attention than it was getting. Five years later the drum is bigger, the team is twelve people, and the conviction hasn't changed.</p>
+  </div>
+  <div class="about-visual">
+    <svg width="260" height="260" viewBox="0 0 260 260">
+      <circle cx="130" cy="130" r="100" fill="none" stroke="#c8a97e" stroke-width=".5" opacity=".3"/>
+      <circle cx="130" cy="130" r="75" fill="none" stroke="#c8a97e" stroke-width=".5" opacity=".3"/>
+      <circle cx="130" cy="130" r="50" fill="#8b4a1e" opacity=".15"/>
+      <circle cx="130" cy="130" r="28" fill="#8b4a1e" opacity=".35"/>
+      <!-- Coffee bean shape -->
+      <ellipse cx="130" cy="130" rx="16" ry="24" fill="#3d2510" transform="rotate(20 130 130)"/>
+      <path d="M125 110 Q130 130, 125 150" stroke="#c8a97e" stroke-width="1.5" fill="none" stroke-linecap="round" transform="rotate(20 130 130)"/>
+      <!-- Orbiting dots -->
+      <circle cx="230" cy="130" r="4" fill="#c8a97e" opacity=".6"/>
+      <circle cx="30" cy="130" r="4" fill="#c8a97e" opacity=".6"/>
+      <circle cx="130" cy="30" r="4" fill="#c8a97e" opacity=".6"/>
+      <circle cx="130" cy="230" r="4" fill="#c8a97e" opacity=".6"/>
+    </svg>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<div class="quote-section">
+  <p class="quote-text">"Good coffee doesn't need to announce itself. You'll notice when it's missing."</p>
+  <p class="quote-author">— Marco V., Head Roaster</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Dusk Coffee</div>
+      <div class="footer-tagline">Slow coffee for a fast world.</div>
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <ul>
+          <li><a href="#">Espresso bar</a></li>
+          <li><a href="#">Cold brew</a></li>
+          <li><a href="#">Pour over</a></li>
+          <li><a href="#">Seasonal</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Visit</h4>
+        <ul>
+          <li><a href="#">14 Ember Lane</a></li>
+          <li><a href="#">Mon–Fri 7am–6pm</a></li>
+          <li><a href="#">Sat–Sun 8am–4pm</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Follow</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Twitter</a></li>
+          <li><a href="#">Newsletter</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2024 Dusk Coffee. All rights reserved.</span>
+    <span class="footer-copy">Made with patience.</span>
+  </div>
+</footer>
+
+<script>
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+</script>
+</body>
+</html>
